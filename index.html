@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Indian Cyber Space Incident Monitor</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-shield-alt me-2"></i>Cyber Incident Monitor
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#" id="dashboard-tab"><i class="fas fa-tachometer-alt me-1"></i> Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" id="incidents-tab"><i class="fas fa-database me-1"></i> Incidents</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" id="sources-tab"><i class="fas fa-search me-1"></i> Sources</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" id="analytics-tab"><i class="fas fa-chart-pie me-1"></i> Analytics</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <!-- Dashboard Tab -->
+        <div id="dashboard-content" class="tab-content">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="card text-white bg-primary mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title">Total Incidents</h5>
+                            <h2 class="card-text" id="total-incidents">0</h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-white bg-success mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title">Active Sources</h5>
+                            <h2 class="card-text" id="active-sources">0</h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-white bg-warning mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title">New Today</h5>
+                            <h2 class="card-text" id="new-today">0</h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card text-white bg-danger mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title">High Severity</h5>
+                            <h2 class="card-text" id="high-severity">0</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-4">
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>Incidents Timeline</h5>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="timelineChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>Incidents by Sector</h5>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="sectorChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-4">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>Recent Incidents</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover" id="recent-incidents">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Title</th>
+                                            <th>Sector</th>
+                                            <th>Severity</th>
+                                            <th>Source</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Filled by JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Incidents Tab -->
+        <div id="incidents-content" class="tab-content" style="display: none;">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5>Cyber Incident Database</h5>
+                    <button class="btn btn-primary" id="add-incident-btn">
+                        <i class="fas fa-plus me-1"></i> Add Incident
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-3">
+                            <input type="text" class="form-control" id="incident-search" placeholder="Search incidents...">
+                        </div>
+                        <div class="col-md-2">
+                            <select class="form-select" id="severity-filter">
+                                <option value="">All Severities</option>
+                                <option value="HIGH">High</option>
+                                <option value="MEDIUM">Medium</option>
+                                <option value="LOW">Low</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <select class="form-select" id="sector-filter">
+                                <option value="">All Sectors</option>
+                                <option value="GOVERNMENT">Government</option>
+                                <option value="FINANCE">Finance</option>
+                                <option value="HEALTHCARE">Healthcare</option>
+                                <option value="ENERGY">Energy</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <button class="btn btn-outline-secondary" id="filter-btn">Filter</button>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover" id="incidents-table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Title</th>
+                                    <th>Sector</th>
+                                    <th>Severity</th>
+                                    <th>Source</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Filled by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <nav aria-label="Incidents pagination">
+                        <ul class="pagination justify-content-center mt-3" id="incidents-pagination">
+                            <!-- Filled by JavaScript -->
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sources Tab -->
+        <div id="sources-content" class="tab-content" style="display: none;">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5>Incident Sources</h5>
+                    <button class="btn btn-primary" id="add-source-btn">
+                        <i class="fas fa-plus me-1"></i> Add Source
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <input type="text" class="form-control" id="source-search" placeholder="Search sources...">
+                        </div>
+                        <div class="col-md-2">
+                            <select class="form-select" id="source-type-filter">
+                                <option value="">All Types</option>
+                                <option value="GOVERNMENT">Government</option>
+                                <option value="PASTEBIN">Pastebin</option>
+                                <option value="FORUM">Forum</option>
+                                <option value="SOCIAL">Social Media</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <button class="btn btn-outline-secondary" id="source-filter-btn">Filter</button>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover" id="sources-table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>URL</th>
+                                    <th>Type</th>
+                                    <th>Last Checked</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Filled by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Analytics Tab -->
+        <div id="analytics-content" class="tab-content" style="display: none;">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>Incidents by Severity</h5>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="severityChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>Incidents by Source</h5>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="sourceChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-4">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>Monthly Trend Analysis</h5>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="trendChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Incident Modal -->
+    <div class="modal fade" id="incidentModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="incidentModalTitle">Add New Incident</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="incidentForm">
+                        <input type="hidden" id="incidentId">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="incidentTitle" class="form-label">Title</label>
+                                <input type="text" class="form-control" id="incidentTitle" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="incidentDate" class="form-label">Date</label>
+                                <input type="date" class="form-control" id="incidentDate" required>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="incidentSector" class="form-label">Sector</label>
+                                <select class="form-select" id="incidentSector" required>
+                                    <option value="">Select Sector</option>
+                                    <option value="GOVERNMENT">Government</option>
+                                    <option value="FINANCE">Finance</option>
+                                    <option value="HEALTHCARE">Healthcare</option>
+                                    <option value="ENERGY">Energy</option>
+                                    <option value="TELECOM">Telecom</option>
+                                    <option value="TRANSPORT">Transport</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="incidentSeverity" class="form-label">Severity</label>
+                                <select class="form-select" id="incidentSeverity" required>
+                                    <option value="">Select Severity</option>
+                                    <option value="HIGH">High</option>
+                                    <option value="MEDIUM">Medium</option>
+                                    <option value="LOW">Low</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="incidentDescription" class="form-label">Description</label>
+                            <textarea class="form-control" id="incidentDescription" rows="3" required></textarea>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="incidentSource" class="form-label">Source</label>
+                                <input type="text" class="form-control" id="incidentSource">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="incidentUrl" class="form-label">Source URL</label>
+                                <input type="url" class="form-control" id="incidentUrl">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="saveIncidentBtn">Save Incident</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Source Modal -->
+    <div class="modal fade" id="sourceModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="sourceModalTitle">Add New Source</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="sourceForm">
+                        <input type="hidden" id="sourceId">
+                        <div class="mb-3">
+                            <label for="sourceName" class="form-label">Name</label>
+                            <input type="text" class="form-control" id="sourceName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="sourceUrl" class="form-label">URL</label>
+                            <input type="url" class="form-control" id="sourceUrl" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="sourceType" class="form-label">Type</label>
+                            <select class="form-select" id="sourceType" required>
+                                <option value="">Select Type</option>
+                                <option value="GOVERNMENT">Government</option>
+                                <option value="PASTEBIN">Pastebin</option>
+                                <option value="FORUM">Forum</option>
+                                <option value="SOCIAL">Social Media</option>
+                                <option value="BLOG">Blog</option>
+                            </select>
+                        </div>
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="sourceActive">
+                            <label class="form-check-label" for="sourceActive">Active</label>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="saveSourceBtn">Save Source</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
